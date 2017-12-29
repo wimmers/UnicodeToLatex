@@ -1,4 +1,4 @@
-# unicode-to-latex
+# UnicodeToLatex
 
 ## Intro
 Paste some text and see it converted to Latex.
