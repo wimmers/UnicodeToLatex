@@ -8,7 +8,7 @@ body, div {
 }
 
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 14px 'PT Sans', Futura, sans-serif;
 }
 
 #root {
@@ -70,6 +70,10 @@ body {
 
 .caption {
   text-align: center;
+}
+
+.settings{
+  margin-left: 10px;
 }
 
 input[type="checkbox"] {
