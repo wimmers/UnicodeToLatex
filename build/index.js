@@ -29427,8 +29427,11 @@ exports.createClass          = createClass;
 var Block                   = __webpack_require__(34);
 var Curry                   = __webpack_require__(17);
 var React                   = __webpack_require__(35);
+var Js_boolean              = __webpack_require__(207);
 var ReasonReact             = __webpack_require__(53);
+var Flags$ReactTemplate     = __webpack_require__(209);
 var Input$ReactTemplate     = __webpack_require__(205);
+var FlagBox$ReactTemplate   = __webpack_require__(208);
 var Translate$ReactTemplate = __webpack_require__(206);
 
 function str(prim) {
@@ -29441,37 +29444,93 @@ function make(_, _$1) {
   var newrecord = component.slice();
   newrecord[/* render */9] = (function (param) {
       var state = param[/* state */2];
+      var reduce = param[/* reduce */1];
+      var hide_debug = 1 - Flags$ReactTemplate.flagSet(/* Debug */0, state[/* flags */2]);
+      var hide_debug_js = Js_boolean.to_js_boolean(hide_debug);
+      var hide_settings = 1 - Flags$ReactTemplate.flagSet(/* Show_Settings */3, state[/* flags */2]);
+      var hide_settings_js = Js_boolean.to_js_boolean(hide_settings);
+      var onToggle = function (flag) {
+        return Curry._1(reduce, (function () {
+                      return /* ToggleFlag */Block.__(2, [flag]);
+                    }));
+      };
       return React.createElement("div", {
                   className: "app"
                 }, React.createElement("div", {
                       className: "title"
-                    }, "Unicode To Latex"), ReasonReact.element(/* None */0, /* None */0, Input$ReactTemplate.make(Curry._1(param[/* reduce */1], (function (text) {
-                                return text;
-                              })), /* array */[])), React.createElement("h4", {
+                    }, "Unicode To Latex"), ReasonReact.element(/* None */0, /* None */0, Input$ReactTemplate.make(Curry._1(reduce, (function (text) {
+                                return /* UpdateText */Block.__(0, [text]);
+                              })), "Your Unicode Text", /* None */0, /* array */[])), React.createElement("div", {
+                      className: "settings",
+                      hidden: hide_settings_js
+                    }, React.createElement("div", {
+                          onClick: (function () {
+                              return Curry._2(reduce, (function () {
+                                            return /* ToggleFlag */Block.__(2, [/* Show_Settings */3]);
+                                          }), /* () */0);
+                            })
+                        }, hide_settings !== 0 ? "+ Settings" : "- Settings"), ReasonReact.element(/* None */0, /* None */0, FlagBox$ReactTemplate.make(state[/* flags */2], /* Whitespace */4, "Protect Whitespace", onToggle, hide_settings, /* array */[])), ReasonReact.element(/* None */0, /* None */0, FlagBox$ReactTemplate.make(state[/* flags */2], /* Isabelle_Keywords */1, "Replace Isabelle Keywords", onToggle, hide_settings, /* array */[])), ReasonReact.element(/* None */0, /* None */0, FlagBox$ReactTemplate.make(state[/* flags */2], /* Remove_Quotations */2, "Remove Quotation Marks", onToggle, hide_settings, /* array */[])), ReasonReact.element(/* None */0, /* None */0, FlagBox$ReactTemplate.make(state[/* flags */2], /* Debug */0, "Show Debug Output", onToggle, hide_settings, /* array */[])), React.createElement("span", {
+                          className: "caption",
+                          hidden: hide_settings_js
+                        }, "Your Substitutions"), ReasonReact.element(/* None */0, /* None */0, Input$ReactTemplate.make(Curry._1(reduce, (function (text) {
+                                    return /* UpdateBindings */Block.__(1, [text]);
+                                  })), "replace : with", /* Some */[hide_settings], /* array */[]))), React.createElement("h3", {
                       className: "caption"
                     }, "Latex Output"), React.createElement("pre", {
                       className: "output"
-                    }, Translate$ReactTemplate.translate(state)), React.createElement("h4", {
-                      className: "caption"
-                    }, "Debug"), React.createElement("pre", {
-                      className: "output"
-                    }, state));
+                    }, Translate$ReactTemplate.translate(state[/* flags */2], state[/* text */0], state[/* bindings */1])), React.createElement("div", {
+                      className: "debug",
+                      hidden: hide_debug_js
+                    }, React.createElement("h4", {
+                          className: "caption",
+                          hidden: hide_debug_js
+                        }, "Debug"), React.createElement("pre", {
+                          className: "output",
+                          hidden: hide_debug_js
+                        }, state[/* text */0])));
     });
   newrecord[/* initialState */10] = (function () {
-      return "";
+      return /* record */[
+              /* text */"",
+              /* bindings */"",
+              /* flags */Flags$ReactTemplate.initial_flags
+            ];
     });
-  newrecord[/* reducer */12] = (function (text, _) {
-      return /* Update */Block.__(0, [text]);
+  newrecord[/* reducer */12] = (function (action, state) {
+      switch (action.tag | 0) {
+        case 0 : 
+            return /* Update */Block.__(0, [/* record */[
+                        /* text */action[0],
+                        /* bindings */state[/* bindings */1],
+                        /* flags */state[/* flags */2]
+                      ]]);
+        case 1 : 
+            return /* Update */Block.__(0, [/* record */[
+                        /* text */state[/* text */0],
+                        /* bindings */action[0],
+                        /* flags */state[/* flags */2]
+                      ]]);
+        case 2 : 
+            return /* Update */Block.__(0, [/* record */[
+                        /* text */state[/* text */0],
+                        /* bindings */state[/* bindings */1],
+                        /* flags */Flags$ReactTemplate.toggleFlag(action[0], state[/* flags */2])
+                      ]]);
+        
+      }
     });
   return newrecord;
 }
 
+var to_js_bool = Js_boolean.to_js_boolean;
+
 var testText = "\ncrel_vs (list_all2 S) (map f xs) (map1\xe2\x87\xa9T . \xe2\x9f\xa8f\xe2\x87\xa9T'\xe2\x9f\xa9 . \xe2\x9f\xa8ys\xe2\x9f\xa9)\n\xe3\x80\x88\n\nA good day, World!\nSch\xc3\xb6nen Tag, Welt!\nUne bonne journ\xc3\xa9e, tout le monde!\n\xd9\x8a\xd9\x88\xd9\x85 \xd8\xac\xd9\x8a\xd8\xaf\xd8\x8c \xd8\xa7\xd9\x84\xd8\xb9\xd8\xa7\xd9\x84\xd9\x85\n\xec\xa2\x8b\xec\x9d\x80 \xec\x9d\xbc, \xec\x84\xb8\xea\xb3\x84!\nM\xe1\xbb\x99t ng\xc3\xa0y t\xe1\xbb\x91t l\xc3\xa0nh, th\xe1\xba\xbf gi\xe1\xbb\x9bi!\n\xe3\x81\x93\xe3\x82\x93\xe3\x81\xab\xe3\x81\xa1\xe3\x81\xaf\xe3\x80\x81\xe4\xb8\x96\xe7\x95\x8c\xef\xbc\x81\xe4\xb8\x96\n\xce\x93\n";
 
-exports.str       = str;
-exports.component = component;
-exports.testText  = testText;
-exports.make      = make;
+exports.str        = str;
+exports.to_js_bool = to_js_bool;
+exports.component  = component;
+exports.testText   = testText;
+exports.make       = make;
 /* component Not a pure module */
 
 
@@ -29498,19 +29557,24 @@ function valueFromEvent(evt) {
 
 var component = ReasonReact.reducerComponent("Input");
 
-function make(onSubmit, _) {
+function make(onSubmit, placeholder, $staropt$star, _) {
+  var hidden = $staropt$star ? $staropt$star[0] : /* false */0;
   var newrecord = component.slice();
   newrecord[/* render */9] = (function (param) {
-      return React.createElement("textarea", {
-                  cols: 40,
-                  placeholder: "Your Unicode Text",
-                  rows: 5,
-                  type: "text",
-                  value: param[/* state */2],
-                  onChange: Curry._1(param[/* reduce */1], (function (evt) {
-                          return evt.target.value;
-                        }))
-                });
+      if (hidden !== 0) {
+        return null;
+      } else {
+        return React.createElement("textarea", {
+                    cols: 40,
+                    placeholder: placeholder,
+                    rows: 5,
+                    type: "text",
+                    value: param[/* state */2],
+                    onChange: Curry._1(param[/* reduce */1], (function (evt) {
+                            return evt.target.value;
+                          }))
+                  });
+      }
     });
   newrecord[/* initialState */10] = (function () {
       return "";
@@ -29537,7 +29601,46 @@ exports.make           = make;
 // Generated by BUCKLESCRIPT VERSION 2.1.0, PLEASE EDIT WITH CARE
 
 
-var List = __webpack_require__(88);
+var List                = __webpack_require__(88);
+var $$Array             = __webpack_require__(210);
+var Curry               = __webpack_require__(17);
+var Caml_array          = __webpack_require__(87);
+var Flags$ReactTemplate = __webpack_require__(209);
+
+function js_replace(prim, prim$1, prim$2) {
+  return prim$2.replace(prim, prim$1);
+}
+
+function re_from_str(prim, prim$1) {
+  return new RegExp(prim, prim$1);
+}
+
+function split_by(prim, prim$1) {
+  return prim$1.split(prim);
+}
+
+function split_by_limit(prim, prim$1, prim$2) {
+  return prim$2.split(prim, prim$1);
+}
+
+function id(x) {
+  return x;
+}
+
+function array_filter_map(f, xs) {
+  var g = function (xs, x) {
+    var match = Curry._1(f, x);
+    if (match) {
+      return /* :: */[
+              match[0],
+              xs
+            ];
+    } else {
+      return xs;
+    }
+  };
+  return $$Array.fold_left(g, /* [] */0, xs);
+}
 
 var binops = /* :: */[
   /* tuple */[
@@ -29690,131 +29793,85 @@ var greek_alphabet = /* :: */[
   /* [] */0
 ];
 
+var isabelle_keywords = /* :: */[
+  /* tuple */[
+    "datatype",
+    "\\isacommand{datatype}"
+  ],
+  /* [] */0
+];
+
 var patterns = List.append(binops2, List.append(/* :: */[
           /* tuple */[
-            "datatype",
-            "\\isacommand{datatype}"
+            "⋀",
+            "\\bigwedge "
           ],
           /* :: */[
             /* tuple */[
-              "⋀",
-              "\\bigwedge "
+              "∀",
+              "\\forall "
             ],
             /* :: */[
               /* tuple */[
-                "∀",
-                "\\forall "
+                "∃",
+                "\\exists "
               ],
               /* :: */[
                 /* tuple */[
-                  "∃",
-                  "\\exists "
+                  "\\{",
+                  "\\{"
                 ],
                 /* :: */[
                   /* tuple */[
-                    "\\{",
-                    "\\{"
+                    "\\.\\.",
+                    "\\ldots "
                   ],
                   /* :: */[
                     /* tuple */[
-                      "\\.\\.",
-                      "\\ldots "
+                      "\\}",
+                      "\\}"
                     ],
                     /* :: */[
                       /* tuple */[
-                        "\\}",
-                        "\\}"
+                        "∞",
+                        "\\infty"
                       ],
                       /* :: */[
                         /* tuple */[
-                          "∞",
-                          "\\infty"
+                          "λ",
+                          "\\lambda "
                         ],
                         /* :: */[
                           /* tuple */[
-                            "\\\"",
-                            ""
+                            "⇩",
+                            "_"
                           ],
                           /* :: */[
                             /* tuple */[
-                              "λ",
-                              "\\lambda "
+                              "⇩",
+                              "_"
                             ],
                             /* :: */[
                               /* tuple */[
-                                "⇩",
-                                "_"
+                                "⟩",
+                                "\\rangle "
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  "⇩",
-                                  "_"
+                                  "⟨",
+                                  "\\langle "
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "map1⇩T",
-                                    "test"
+                                    "〈",
+                                    "\\langle"
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "map1",
-                                      "test"
+                                      "_",
+                                      "\\_"
                                     ],
-                                    /* :: */[
-                                      /* tuple */[
-                                        "⟩",
-                                        "\\rangle "
-                                      ],
-                                      /* :: */[
-                                        /* tuple */[
-                                          "⟨",
-                                          "\\langle "
-                                        ],
-                                        /* :: */[
-                                          /* tuple */[
-                                            "〈",
-                                            "\\langle"
-                                          ],
-                                          /* :: */[
-                                            /* tuple */[
-                                              "_",
-                                              "\\_"
-                                            ],
-                                            /* :: */[
-                                              /* tuple */[
-                                                "crel_vs",
-                                                "\\crel"
-                                              ],
-                                              /* :: */[
-                                                /* tuple */[
-                                                  "crel_vs\'",
-                                                  "\\crelprime"
-                                                ],
-                                                /* :: */[
-                                                  /* tuple */[
-                                                    "rel_state",
-                                                    "\\relstate"
-                                                  ],
-                                                  /* :: */[
-                                                    /* tuple */[
-                                                      "\\n",
-                                                      "\\\\\n"
-                                                    ],
-                                                    /* :: */[
-                                                      /* tuple */[
-                                                        " ",
-                                                        "~"
-                                                      ],
-                                                      /* [] */0
-                                                    ]
-                                                  ]
-                                                ]
-                                              ]
-                                            ]
-                                          ]
-                                        ]
-                                      ]
-                                    ]
+                                    /* [] */0
                                   ]
                                 ]
                               ]
@@ -29832,20 +29889,757 @@ var patterns = List.append(binops2, List.append(/* :: */[
 
 var patterns$1 = List.append(greek_alphabet, patterns);
 
-function translate(param) {
+var whitespace_patterns = /* :: */[
+  /* tuple */[
+    "\\n",
+    "\\\\\n"
+  ],
+  /* :: */[
+    /* tuple */[
+      " ",
+      "~"
+    ],
+    /* [] */0
+  ]
+];
+
+function replace(param) {
   return List.fold_right((function (p, s) {
                 return s.replace(new RegExp(p[0], "g"), p[1]);
               }), patterns$1, param);
 }
 
-exports.binops         = binops;
-exports.binops_escape  = binops_escape;
-exports.binops1        = binops1;
-exports.binops2        = binops2;
-exports.greek_alphabet = greek_alphabet;
-exports.patterns       = patterns$1;
-exports.translate      = translate;
+function replace_whitespace(param) {
+  return List.fold_right((function (p, s) {
+                return s.replace(new RegExp(p[0], "g"), p[1]);
+              }), whitespace_patterns, param);
+}
+
+function replace_keywords(param) {
+  return List.fold_right((function (p, s) {
+                return s.replace(new RegExp(p[0], "g"), p[1]);
+              }), isabelle_keywords, param);
+}
+
+var partial_arg = new RegExp("\\\"", "g");
+
+function remove_quotations(param) {
+  return param.replace(partial_arg, "");
+}
+
+function bindings_of(str) {
+  var f = function (p) {
+    var match = +(p.length === 2);
+    if (match !== 0) {
+      return /* Some */[/* tuple */[
+                Caml_array.caml_array_get(p, 0),
+                Caml_array.caml_array_get(p, 1)
+              ]];
+    } else {
+      return /* None */0;
+    }
+  };
+  var lines = str.split(new RegExp("\n", "g"));
+  var partial_arg = new RegExp("\\s*\\:\\s*(.*)", "i");
+  var bindings = $$Array.map((function (param) {
+          return param.split(partial_arg, 2);
+        }), lines);
+  return array_filter_map(f, bindings);
+}
+
+function replace_bindings(bindings) {
+  var bindings$1 = bindings_of(bindings);
+  return (function (param) {
+      return List.fold_right((function (p, s) {
+                    return s.replace(new RegExp(p[0], "g"), p[1]);
+                  }), bindings$1, param);
+    });
+}
+
+function translate(flags, text, bindings) {
+  var match = Flags$ReactTemplate.flagSet(/* Remove_Quotations */2, flags);
+  var match$1 = Flags$ReactTemplate.flagSet(/* Isabelle_Keywords */1, flags);
+  var match$2 = Flags$ReactTemplate.flagSet(/* Whitespace */4, flags);
+  return replace(replace_bindings(bindings)(Curry._1(match !== 0 ? remove_quotations : id, Curry._1(match$1 !== 0 ? replace_keywords : id, Curry._1(match$2 !== 0 ? replace_whitespace : id, text)))));
+}
+
+exports.js_replace          = js_replace;
+exports.re_from_str         = re_from_str;
+exports.split_by            = split_by;
+exports.split_by_limit      = split_by_limit;
+exports.id                  = id;
+exports.array_filter_map    = array_filter_map;
+exports.binops              = binops;
+exports.binops_escape       = binops_escape;
+exports.binops1             = binops1;
+exports.binops2             = binops2;
+exports.greek_alphabet      = greek_alphabet;
+exports.isabelle_keywords   = isabelle_keywords;
+exports.patterns            = patterns$1;
+exports.whitespace_patterns = whitespace_patterns;
+exports.replace             = replace;
+exports.replace_whitespace  = replace_whitespace;
+exports.replace_keywords    = replace_keywords;
+exports.remove_quotations   = remove_quotations;
+exports.bindings_of         = bindings_of;
+exports.replace_bindings    = replace_bindings;
+exports.translate           = translate;
 /* binops1 Not a pure module */
+
+
+/***/ }),
+/* 207 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+
+function to_js_boolean(b) {
+  if (b) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+exports.to_js_boolean = to_js_boolean;
+/* No side effect */
+
+
+/***/ }),
+/* 208 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Generated by BUCKLESCRIPT VERSION 2.1.0, PLEASE EDIT WITH CARE
+
+
+var Curry               = __webpack_require__(17);
+var React               = __webpack_require__(35);
+var Js_boolean          = __webpack_require__(207);
+var ReasonReact         = __webpack_require__(53);
+var Flags$ReactTemplate = __webpack_require__(209);
+
+function str(prim) {
+  return prim;
+}
+
+var component = ReasonReact.statelessComponent("FlagBox");
+
+function make(flags, flag, title, onToggle, hidden, _) {
+  var newrecord = component.slice();
+  newrecord[/* render */9] = (function () {
+      if (hidden !== 0) {
+        return null;
+      } else {
+        return React.createElement("div", {
+                    className: "item",
+                    onClick: (function () {
+                        return Curry._2(onToggle, flag, /* () */0);
+                      })
+                  }, React.createElement("input", {
+                        checked: Js_boolean.to_js_boolean(Flags$ReactTemplate.flagSet(flag, flags)),
+                        type: "checkbox"
+                      }), title);
+      }
+    });
+  return newrecord;
+}
+
+var to_js_bool = Js_boolean.to_js_boolean;
+
+exports.str        = str;
+exports.to_js_bool = to_js_bool;
+exports.component  = component;
+exports.make       = make;
+/* component Not a pure module */
+
+
+/***/ }),
+/* 209 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Generated by BUCKLESCRIPT VERSION 2.1.0, PLEASE EDIT WITH CARE
+
+
+
+function toggleFlag(flag, state) {
+  switch (flag) {
+    case 0 : 
+        return /* record */[
+                /* debug */1 - state[/* debug */0],
+                /* isabelle_keywords */state[/* isabelle_keywords */1],
+                /* remove_quotations */state[/* remove_quotations */2],
+                /* show_settings */state[/* show_settings */3],
+                /* whitespace */state[/* whitespace */4]
+              ];
+    case 1 : 
+        return /* record */[
+                /* debug */state[/* debug */0],
+                /* isabelle_keywords */1 - state[/* isabelle_keywords */1],
+                /* remove_quotations */state[/* remove_quotations */2],
+                /* show_settings */state[/* show_settings */3],
+                /* whitespace */state[/* whitespace */4]
+              ];
+    case 2 : 
+        return /* record */[
+                /* debug */state[/* debug */0],
+                /* isabelle_keywords */state[/* isabelle_keywords */1],
+                /* remove_quotations */1 - state[/* remove_quotations */2],
+                /* show_settings */state[/* show_settings */3],
+                /* whitespace */state[/* whitespace */4]
+              ];
+    case 3 : 
+        return /* record */[
+                /* debug */state[/* debug */0],
+                /* isabelle_keywords */state[/* isabelle_keywords */1],
+                /* remove_quotations */state[/* remove_quotations */2],
+                /* show_settings */1 - state[/* show_settings */3],
+                /* whitespace */state[/* whitespace */4]
+              ];
+    case 4 : 
+        return /* record */[
+                /* debug */state[/* debug */0],
+                /* isabelle_keywords */state[/* isabelle_keywords */1],
+                /* remove_quotations */state[/* remove_quotations */2],
+                /* show_settings */state[/* show_settings */3],
+                /* whitespace */1 - state[/* whitespace */4]
+              ];
+    
+  }
+}
+
+function flagSet(flag, state) {
+  switch (flag) {
+    case 0 : 
+        return state[/* debug */0];
+    case 1 : 
+        return state[/* isabelle_keywords */1];
+    case 2 : 
+        return state[/* remove_quotations */2];
+    case 3 : 
+        return state[/* show_settings */3];
+    case 4 : 
+        return state[/* whitespace */4];
+    
+  }
+}
+
+var initial_flags = /* record */[
+  /* debug : false */0,
+  /* isabelle_keywords : false */0,
+  /* remove_quotations : false */0,
+  /* show_settings : false */0,
+  /* whitespace : true */1
+];
+
+exports.initial_flags = initial_flags;
+exports.toggleFlag    = toggleFlag;
+exports.flagSet       = flagSet;
+/* No side effect */
+
+
+/***/ }),
+/* 210 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Curry                   = __webpack_require__(17);
+var Js_exn                  = __webpack_require__(211);
+var Caml_array              = __webpack_require__(87);
+var Caml_exceptions         = __webpack_require__(200);
+var Caml_builtin_exceptions = __webpack_require__(9);
+
+function init(l, f) {
+  if (l) {
+    if (l < 0) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Array.init"
+          ];
+    } else {
+      var res = Caml_array.caml_make_vect(l, Curry._1(f, 0));
+      for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+        res[i] = Curry._1(f, i);
+      }
+      return res;
+    }
+  } else {
+    return /* array */[];
+  }
+}
+
+function make_matrix(sx, sy, init) {
+  var res = Caml_array.caml_make_vect(sx, /* array */[]);
+  for(var x = 0 ,x_finish = sx - 1 | 0; x <= x_finish; ++x){
+    res[x] = Caml_array.caml_make_vect(sy, init);
+  }
+  return res;
+}
+
+function copy(a) {
+  var l = a.length;
+  if (l) {
+    return Caml_array.caml_array_sub(a, 0, l);
+  } else {
+    return /* array */[];
+  }
+}
+
+function append(a1, a2) {
+  var l1 = a1.length;
+  if (l1) {
+    if (a2.length) {
+      return a1.concat(a2);
+    } else {
+      return Caml_array.caml_array_sub(a1, 0, l1);
+    }
+  } else {
+    return copy(a2);
+  }
+}
+
+function sub(a, ofs, len) {
+  if (len < 0 || ofs > (a.length - len | 0)) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Array.sub"
+        ];
+  } else {
+    return Caml_array.caml_array_sub(a, ofs, len);
+  }
+}
+
+function fill(a, ofs, len, v) {
+  if (ofs < 0 || len < 0 || ofs > (a.length - len | 0)) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Array.fill"
+        ];
+  } else {
+    for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i <= i_finish; ++i){
+      a[i] = v;
+    }
+    return /* () */0;
+  }
+}
+
+function blit(a1, ofs1, a2, ofs2, len) {
+  if (len < 0 || ofs1 < 0 || ofs1 > (a1.length - len | 0) || ofs2 < 0 || ofs2 > (a2.length - len | 0)) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Array.blit"
+        ];
+  } else {
+    return Caml_array.caml_array_blit(a1, ofs1, a2, ofs2, len);
+  }
+}
+
+function iter(f, a) {
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
+    Curry._1(f, a[i]);
+  }
+  return /* () */0;
+}
+
+function map(f, a) {
+  var l = a.length;
+  if (l) {
+    var r = Caml_array.caml_make_vect(l, Curry._1(f, a[0]));
+    for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+      r[i] = Curry._1(f, a[i]);
+    }
+    return r;
+  } else {
+    return /* array */[];
+  }
+}
+
+function iteri(f, a) {
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
+    Curry._2(f, i, a[i]);
+  }
+  return /* () */0;
+}
+
+function mapi(f, a) {
+  var l = a.length;
+  if (l) {
+    var r = Caml_array.caml_make_vect(l, Curry._2(f, 0, a[0]));
+    for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
+      r[i] = Curry._2(f, i, a[i]);
+    }
+    return r;
+  } else {
+    return /* array */[];
+  }
+}
+
+function to_list(a) {
+  var _i = a.length - 1 | 0;
+  var _res = /* [] */0;
+  while(true) {
+    var res = _res;
+    var i = _i;
+    if (i < 0) {
+      return res;
+    } else {
+      _res = /* :: */[
+        a[i],
+        res
+      ];
+      _i = i - 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+function list_length(_accu, _param) {
+  while(true) {
+    var param = _param;
+    var accu = _accu;
+    if (param) {
+      _param = param[1];
+      _accu = accu + 1 | 0;
+      continue ;
+      
+    } else {
+      return accu;
+    }
+  };
+}
+
+function of_list(l) {
+  if (l) {
+    var a = Caml_array.caml_make_vect(list_length(0, l), l[0]);
+    var _i = 1;
+    var _param = l[1];
+    while(true) {
+      var param = _param;
+      var i = _i;
+      if (param) {
+        a[i] = param[0];
+        _param = param[1];
+        _i = i + 1 | 0;
+        continue ;
+        
+      } else {
+        return a;
+      }
+    };
+  } else {
+    return /* array */[];
+  }
+}
+
+function fold_left(f, x, a) {
+  var r = x;
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
+    r = Curry._2(f, r, a[i]);
+  }
+  return r;
+}
+
+function fold_right(f, a, x) {
+  var r = x;
+  for(var i = a.length - 1 | 0; i >= 0; --i){
+    r = Curry._2(f, a[i], r);
+  }
+  return r;
+}
+
+var Bottom = Caml_exceptions.create("Array.Bottom");
+
+function sort(cmp, a) {
+  var maxson = function (l, i) {
+    var i31 = ((i + i | 0) + i | 0) + 1 | 0;
+    var x = i31;
+    if ((i31 + 2 | 0) < l) {
+      if (Curry._2(cmp, Caml_array.caml_array_get(a, i31), Caml_array.caml_array_get(a, i31 + 1 | 0)) < 0) {
+        x = i31 + 1 | 0;
+      }
+      if (Curry._2(cmp, Caml_array.caml_array_get(a, x), Caml_array.caml_array_get(a, i31 + 2 | 0)) < 0) {
+        x = i31 + 2 | 0;
+      }
+      return x;
+    } else if ((i31 + 1 | 0) < l && Curry._2(cmp, Caml_array.caml_array_get(a, i31), Caml_array.caml_array_get(a, i31 + 1 | 0)) < 0) {
+      return i31 + 1 | 0;
+    } else if (i31 < l) {
+      return i31;
+    } else {
+      throw [
+            Bottom,
+            i
+          ];
+    }
+  };
+  var trickle = function (l, i, e) {
+    try {
+      var l$1 = l;
+      var _i = i;
+      var e$1 = e;
+      while(true) {
+        var i$1 = _i;
+        var j = maxson(l$1, i$1);
+        if (Curry._2(cmp, Caml_array.caml_array_get(a, j), e$1) > 0) {
+          Caml_array.caml_array_set(a, i$1, Caml_array.caml_array_get(a, j));
+          _i = j;
+          continue ;
+          
+        } else {
+          return Caml_array.caml_array_set(a, i$1, e$1);
+        }
+      };
+    }
+    catch (raw_exn){
+      var exn = Js_exn.internalToOCamlException(raw_exn);
+      if (exn[0] === Bottom) {
+        return Caml_array.caml_array_set(a, exn[1], e);
+      } else {
+        throw exn;
+      }
+    }
+  };
+  var bubble = function (l, i) {
+    try {
+      var l$1 = l;
+      var _i = i;
+      while(true) {
+        var i$1 = _i;
+        var j = maxson(l$1, i$1);
+        Caml_array.caml_array_set(a, i$1, Caml_array.caml_array_get(a, j));
+        _i = j;
+        continue ;
+        
+      };
+    }
+    catch (raw_exn){
+      var exn = Js_exn.internalToOCamlException(raw_exn);
+      if (exn[0] === Bottom) {
+        return exn[1];
+      } else {
+        throw exn;
+      }
+    }
+  };
+  var trickleup = function (_i, e) {
+    while(true) {
+      var i = _i;
+      var father = (i - 1 | 0) / 3 | 0;
+      if (i === father) {
+        throw [
+              Caml_builtin_exceptions.assert_failure,
+              [
+                "array.ml",
+                168,
+                4
+              ]
+            ];
+      }
+      if (Curry._2(cmp, Caml_array.caml_array_get(a, father), e) < 0) {
+        Caml_array.caml_array_set(a, i, Caml_array.caml_array_get(a, father));
+        if (father > 0) {
+          _i = father;
+          continue ;
+          
+        } else {
+          return Caml_array.caml_array_set(a, 0, e);
+        }
+      } else {
+        return Caml_array.caml_array_set(a, i, e);
+      }
+    };
+  };
+  var l = a.length;
+  for(var i = ((l + 1 | 0) / 3 | 0) - 1 | 0; i >= 0; --i){
+    trickle(l, i, Caml_array.caml_array_get(a, i));
+  }
+  for(var i$1 = l - 1 | 0; i$1 >= 2; --i$1){
+    var e = Caml_array.caml_array_get(a, i$1);
+    Caml_array.caml_array_set(a, i$1, Caml_array.caml_array_get(a, 0));
+    trickleup(bubble(i$1, 0), e);
+  }
+  if (l > 1) {
+    var e$1 = Caml_array.caml_array_get(a, 1);
+    Caml_array.caml_array_set(a, 1, Caml_array.caml_array_get(a, 0));
+    return Caml_array.caml_array_set(a, 0, e$1);
+  } else {
+    return 0;
+  }
+}
+
+function stable_sort(cmp, a) {
+  var merge = function (src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs) {
+    var src1r = src1ofs + src1len | 0;
+    var src2r = src2ofs + src2len | 0;
+    var _i1 = src1ofs;
+    var _s1 = Caml_array.caml_array_get(a, src1ofs);
+    var _i2 = src2ofs;
+    var _s2 = Caml_array.caml_array_get(src2, src2ofs);
+    var _d = dstofs;
+    while(true) {
+      var d = _d;
+      var s2 = _s2;
+      var i2 = _i2;
+      var s1 = _s1;
+      var i1 = _i1;
+      if (Curry._2(cmp, s1, s2) <= 0) {
+        Caml_array.caml_array_set(dst, d, s1);
+        var i1$1 = i1 + 1 | 0;
+        if (i1$1 < src1r) {
+          _d = d + 1 | 0;
+          _s1 = Caml_array.caml_array_get(a, i1$1);
+          _i1 = i1$1;
+          continue ;
+          
+        } else {
+          return blit(src2, i2, dst, d + 1 | 0, src2r - i2 | 0);
+        }
+      } else {
+        Caml_array.caml_array_set(dst, d, s2);
+        var i2$1 = i2 + 1 | 0;
+        if (i2$1 < src2r) {
+          _d = d + 1 | 0;
+          _s2 = Caml_array.caml_array_get(src2, i2$1);
+          _i2 = i2$1;
+          continue ;
+          
+        } else {
+          return blit(a, i1, dst, d + 1 | 0, src1r - i1 | 0);
+        }
+      }
+    };
+  };
+  var isortto = function (srcofs, dst, dstofs, len) {
+    for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
+      var e = Caml_array.caml_array_get(a, srcofs + i | 0);
+      var j = (dstofs + i | 0) - 1 | 0;
+      while(j >= dstofs && Curry._2(cmp, Caml_array.caml_array_get(dst, j), e) > 0) {
+        Caml_array.caml_array_set(dst, j + 1 | 0, Caml_array.caml_array_get(dst, j));
+        j = j - 1 | 0;
+      };
+      Caml_array.caml_array_set(dst, j + 1 | 0, e);
+    }
+    return /* () */0;
+  };
+  var sortto = function (srcofs, dst, dstofs, len) {
+    if (len <= 5) {
+      return isortto(srcofs, dst, dstofs, len);
+    } else {
+      var l1 = len / 2 | 0;
+      var l2 = len - l1 | 0;
+      sortto(srcofs + l1 | 0, dst, dstofs + l1 | 0, l2);
+      sortto(srcofs, a, srcofs + l2 | 0, l1);
+      return merge(srcofs + l2 | 0, l1, dst, dstofs + l1 | 0, l2, dst, dstofs);
+    }
+  };
+  var l = a.length;
+  if (l <= 5) {
+    return isortto(0, a, 0, l);
+  } else {
+    var l1 = l / 2 | 0;
+    var l2 = l - l1 | 0;
+    var t = Caml_array.caml_make_vect(l2, Caml_array.caml_array_get(a, 0));
+    sortto(l1, t, 0, l2);
+    sortto(0, a, l2, l1);
+    return merge(l2, l1, t, 0, l2, a, 0);
+  }
+}
+
+var create_matrix = make_matrix;
+
+var concat = Caml_array.caml_array_concat;
+
+var fast_sort = stable_sort;
+
+exports.init          = init;
+exports.make_matrix   = make_matrix;
+exports.create_matrix = create_matrix;
+exports.append        = append;
+exports.concat        = concat;
+exports.sub           = sub;
+exports.copy          = copy;
+exports.fill          = fill;
+exports.blit          = blit;
+exports.to_list       = to_list;
+exports.of_list       = of_list;
+exports.iter          = iter;
+exports.map           = map;
+exports.iteri         = iteri;
+exports.mapi          = mapi;
+exports.fold_left     = fold_left;
+exports.fold_right    = fold_right;
+exports.sort          = sort;
+exports.stable_sort   = stable_sort;
+exports.fast_sort     = fast_sort;
+/* No side effect */
+
+
+/***/ }),
+/* 211 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Caml_exceptions = __webpack_require__(200);
+
+var $$Error = Caml_exceptions.create("Js_exn.Error");
+
+function internalToOCamlException(e) {
+  if (Caml_exceptions.isCamlExceptionOrOpenVariant(e)) {
+    return e;
+  } else {
+    return [
+            $$Error,
+            e
+          ];
+  }
+}
+
+function raiseError(str) {
+  throw new Error(str);
+}
+
+function raiseEvalError(str) {
+  throw new EvalError(str);
+}
+
+function raiseRangeError(str) {
+  throw new RangeError(str);
+}
+
+function raiseReferenceError(str) {
+  throw new ReferenceError(str);
+}
+
+function raiseSyntaxError(str) {
+  throw new SyntaxError(str);
+}
+
+function raiseTypeError(str) {
+  throw new TypeError(str);
+}
+
+function raiseUriError(str) {
+  throw new URIError(str);
+}
+
+exports.$$Error                  = $$Error;
+exports.internalToOCamlException = internalToOCamlException;
+exports.raiseError               = raiseError;
+exports.raiseEvalError           = raiseEvalError;
+exports.raiseRangeError          = raiseRangeError;
+exports.raiseReferenceError      = raiseReferenceError;
+exports.raiseSyntaxError         = raiseSyntaxError;
+exports.raiseTypeError           = raiseTypeError;
+exports.raiseUriError            = raiseUriError;
+/* No side effect */
 
 
 /***/ })
