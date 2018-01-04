@@ -76,7 +76,12 @@ let make = (~message, _children) => {
       flags=state.flags hidden=hide_settings onToggle
     />
     <FlagBox
-      flag=Debug 
+      flag=Fallback
+      title="Use Fallback Replacements"
+      flags=state.flags hidden=hide_settings onToggle
+    />
+    <FlagBox
+      flag=Debug
       title="Show Debug Output"
       flags=state.flags hidden=hide_settings onToggle
     />

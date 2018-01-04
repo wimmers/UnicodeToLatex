@@ -100,8 +100,7 @@ let patterns = List.append(binops2, List.append(patterns, binops1));
 
 let patterns = List.append(greek_alphabet, patterns);
 
-let patterns =
-  List.append(Array.to_list(Translation_table.unicode_to_latex), patterns);
+let fallback_table = Array.to_list(Translation_table.unicode_to_latex);
 
 let whitespace_patterns = [({js|\\n|js}, "\\\\\n"), ({js| |js}, {|~|})];
 
@@ -109,6 +108,12 @@ let replace =
   List.fold_right(
     (p, s) => js_replace(re_from_str(fst(p), "g"), snd(p), s),
     patterns
+  );
+
+let replace_fallback =
+  List.fold_right(
+    (p, s) => js_replace(re_from_str(fst(p), "g"), snd(p), s),
+    fallback_table
   );
 
 let replace_whitespace =
@@ -146,9 +151,14 @@ let replace_bindings = bindings => {
 };
 
 let translate = (~flags: Flags.flag_state, text, bindings) =>
+{
+  let replace_opt = (flag, replace) =>
+    (Flags.flagSet(flag, flags) ? replace : id);
   text
-  |> (Flags.flagSet(Whitespace, flags) ? replace_whitespace : id)
-  |> (Flags.flagSet(Isabelle_Keywords, flags) ? replace_keywords : id)
-  |> (Flags.flagSet(Remove_Quotations, flags) ? remove_quotations : id)
+  |> replace_opt(Fallback, replace_fallback)
+  |> replace_opt(Whitespace, replace_whitespace)
+  |> replace_opt(Isabelle_Keywords, replace_keywords)
+  |> replace_opt(Remove_Quotations, remove_quotations)
   |> replace_bindings(bindings)
-  |> replace;
+  |> replace
+};

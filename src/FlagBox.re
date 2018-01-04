@@ -9,10 +9,11 @@ let make = (~flags, ~flag, ~title, ~onToggle, ~hidden, _children) => {
 render: (self) =>
     hidden ?
     ReasonReact.nullElement :
-    <div className="item" onClick=((_evt) => onToggle(flag)())>
+    <div className="item">
     <input
         _type="checkbox"
         checked=(to_js_bool(Flags.flagSet(flag, flags)))
+        onChange=((_evt) => onToggle(flag)())
     />
     (str(title))
     </div>
