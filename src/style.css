@@ -76,14 +76,27 @@ body {
   margin-left: 10px;
 }
 
-input[type="checkbox"] {
-  margin-right: 10px;
+.space{
+  max-width: 30px;
 }
 
-input[type="text"] {
-  align-self: stretch;
-  padding: 3px 5px;
-  margin-top: 20px;
+.inputContainer {
+  display: inline;  
+}
+.inputContainer label {
+  float: left;
+  margin-right: 10px;
+}
+.inputContainer div {
+  overflow: hidden;
+}
+.inputContainer input {
+  max-width: 100px;
+  display: block
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
 }
 
 textarea[type="text"] {

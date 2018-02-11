@@ -36,7 +36,7 @@ let binops_escape = [
   ({js|≤|js}, {|\leq|}),
   ({js|↦|js}, {|\mapsto|}),
   ({js|⤜|js}, {|\bind|}),
-  ({js|≡|js}, {|\equiv|}),
+  ({js|≡|js}, {|\equiv|})
 ];
 
 let binops_isabelle_hol = [
@@ -60,6 +60,45 @@ let binops2 =
   );
 
 let greek_alphabet = [({js|Γ|js}, {|\Gamma|})];
+
+let mathcals = [
+  {js|𝒜|js},
+  {js|ℬ|js},
+  {js|𝒞|js},
+  {js|𝒟|js},
+  {js|ℰ|js},
+  {js|ℱ|js},
+  {js|𝒢|js},
+  {js|ℋ|js},
+  {js|ℐ|js},
+  {js|𝒥|js},
+  {js|𝒦|js},
+  {js|ℒ|js},
+  {js|ℳ|js},
+  {js|𝒩|js},
+  {js|𝒪|js},
+  {js|𝒫|js},
+  {js|𝒬|js},
+  {js|ℛ|js},
+  {js|𝒮|js},
+  {js|𝒯|js},
+  {js|𝒰|js},
+  {js|𝒱|js},
+  {js|𝒲|js},
+  {js|𝒳|js},
+  {js|𝒴|js},
+  {js|𝒵|js}
+];
+
+let caps_alphabet =
+  Array.to_list(Js.String.split("", {js|ABCDEFGHIJKLMNOPQRSTUVWXYZ|js}));
+
+let mathcal = {
+  let caps = List.map(s => {|\mathcal{|} ++ s ++ "}", caps_alphabet);
+  Js.log(List.length(caps));
+  let zipped = List.map2((a, b) => (a, b), mathcals, caps);
+  zipped;
+};
 
 let isabelle_keywords = [
   ({js|datatype|js}, {|\isacommand{datatype}|}),
@@ -92,19 +131,27 @@ let patterns = [
   ({js|⟩|js}, {|\rangle |}),
   ({js|⟨|js}, {|\langle |}),
   ({js|〈|js}, {|\langle|}),
-  ({js|〉|js}, {|\rangle|}),
-  ({js|_|js}, {|\_|})
+  ({js|〉|js}, {|\rangle|})
 ];
+
+let patterns_first = [({js|_|js}, {|\_|})];
 
 let patterns = List.append(binops2, List.append(patterns, binops1));
 
 let patterns = List.append(greek_alphabet, patterns);
 
+let patterns_last = [];
+
+let patterns_last = List.append(mathcal, patterns_last);
+
 let fallback_table = Array.to_list(Translation_table.unicode_to_latex);
 
-let whitespace_patterns = [({js|\\n|js}, "\\\\\n"), ({js| |js}, {|~|})];
+let whitespace_patterns = space => [
+  ({js|\\n|js}, "\\\\\n"),
+  ({js| |js}, space)
+];
 
-let replace =
+let replace = patterns =>
   List.fold_right(
     (p, s) => js_replace(re_from_str(fst(p), "g"), snd(p), s),
     patterns
@@ -116,10 +163,10 @@ let replace_fallback =
     fallback_table
   );
 
-let replace_whitespace =
+let replace_whitespace = space =>
   List.fold_right(
     (p, s) => js_replace(re_from_str(fst(p), "g"), snd(p), s),
-    whitespace_patterns
+    whitespace_patterns(space)
   );
 
 let replace_keywords =
@@ -150,15 +197,15 @@ let replace_bindings = bindings => {
   );
 };
 
-let translate = (~flags: Flags.flag_state, text, bindings) =>
-{
+let translate = (~flags: Flags.flag_state, text, bindings, space) => {
   let replace_opt = (flag, replace) =>
-    (Flags.flagSet(flag, flags) ? replace : id);
+    Flags.flagSet(flag, flags) ? replace : id;
   text
+  |> replace_opt(Whitespace, replace_whitespace(space))
   |> replace_opt(Fallback, replace_fallback)
-  |> replace_opt(Whitespace, replace_whitespace)
   |> replace_opt(Isabelle_Keywords, replace_keywords)
   |> replace_opt(Remove_Quotations, remove_quotations)
   |> replace_bindings(bindings)
-  |> replace
+  |> replace(patterns)
+  |> replace(patterns_last);
 };
